@@ -26,13 +26,14 @@ const TaskItem = ({ task }) => {
       setIsTimerRunning(true);
     } else if (newStatus === 'pending-approval') {
       setIsTimerRunning(false);
-      dispatch(updateTask(task.id, { 
+      dispatch(updateTask(task.id, {
         status: newStatus,
-        timeSpent: timeSpent 
+        timeSpent: timeSpent
       }));
       return;
+    } else {
+      dispatch(updateTask(task.id, { status: newStatus }));
     }
-    dispatch(updateTask(task.id, { status: newStatus }));
   };
 
   const handleDelete = () => {
@@ -51,9 +52,9 @@ const TaskItem = ({ task }) => {
   return (
     <li className="task-item">
       {isEditing ? (
-        <TaskForm 
-          task={task} 
-          onCancel={() => setIsEditing(false)} 
+        <TaskForm
+          task={task}
+          onCancel={() => setIsEditing(false)}
           onSave={(updatedTask) => {
             dispatch(updateTask(task.id, updatedTask));
             setIsEditing(false);
@@ -63,15 +64,11 @@ const TaskItem = ({ task }) => {
         <>
           <div className="task-header">
             <h4>{task.title}</h4>
-            <span className={`priority ${task.priority}`}>
-              {task.priority}
-            </span>
-            <span className={`status ${task.status}`}>
-              {task.status}
-            </span>
+            <span className={`priority ${task.priority}`}>{task.priority}</span>
+            <span className={`status ${task.status}`}>{task.status}</span>
           </div>
           <p>{task.description}</p>
-          
+
           <div className="task-details-row">
             <div className="detail-item">
               <span className="detail-label">Assignee:</span>
@@ -85,14 +82,12 @@ const TaskItem = ({ task }) => {
               <span className="detail-label">Due:</span>
               <span>{new Date(task.dueDate).toLocaleDateString()}</span>
             </div>
-            {(isTimerRunning || task.status === 'pending-approval') && (
-              <div className="detail-item">
-                <span className="detail-label">
-                  {task.status === 'pending-approval' ? 'Time Spent:' : 'Time:'}
-                </span>
-                <span>{formatTime(task.status === 'pending-approval' ? task.timeSpent : timeSpent)}</span>
-              </div>
-            )}
+            <div className="detail-item">
+              <span className="detail-label">Time Spent:</span>
+              <span>
+                {formatTime(task.status === 'pending-approval' || task.status === 'closed' ? task.timeSpent : timeSpent)}
+              </span>
+            </div>
           </div>
 
           <div className="task-actions">
@@ -108,7 +103,7 @@ const TaskItem = ({ task }) => {
                     Mark as Resolved
                   </button>
                 )}
-                {task.status !== 'pending-approval' && (
+                {task.status !== 'pending-approval' && task.status !== 'closed' && (
                   <>
                     <button onClick={() => setIsEditing(true)}>
                       <FiEdit /> Edit
