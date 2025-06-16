@@ -50,7 +50,7 @@ export const addTask = (task) => dispatch => {
 
 export const updateTask = (taskId, updates) => dispatch => {
   const tasks = loadTasks();
-  const taskIndex = tasks.findIndex(t => t.id === taskId);
+  const taskIndex = tasks.findIndex(t => t.id === parseInt(taskId));
 
   if (taskIndex !== -1) {
     const updatedTask = {
@@ -71,7 +71,7 @@ export const updateTask = (taskId, updates) => dispatch => {
 
 export const deleteTask = (taskId) => dispatch => {
   let tasks = loadTasks();
-  const updatedTasks = tasks.filter(task => task.id !== taskId);
+  const updatedTasks = tasks.filter(task => task.id !== parseInt(taskId));
   saveTasks(updatedTasks);
 
   dispatch({
@@ -97,3 +97,4 @@ export const filterTasks = (filters) => (dispatch, getState) => {
     payload: filteredTasks
   });
 };
+
