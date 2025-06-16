@@ -28,12 +28,23 @@ const TaskItem = ({ task }) => {
       setIsTimerRunning(false);
       dispatch(updateTask(task.id, {
         status: newStatus,
-        timeSpent: timeSpent
+        timeSpent
       }));
       return;
-    } else {
-      dispatch(updateTask(task.id, { status: newStatus }));
+    } else if (newStatus === 'closed') {
+      dispatch(updateTask(task.id, {
+        status: newStatus
+      }));
+      return;
+    } else if (newStatus === 'open') {
+      dispatch(updateTask(task.id, {
+        status: newStatus,
+        timeSpent: 0
+      }));
+      setTimeSpent(0);
+      return;
     }
+    dispatch(updateTask(task.id, { status: newStatus }));
   };
 
   const handleDelete = () => {
@@ -85,7 +96,11 @@ const TaskItem = ({ task }) => {
             <div className="detail-item">
               <span className="detail-label">Time Spent:</span>
               <span>
-                {formatTime(task.status === 'pending-approval' || task.status === 'closed' ? task.timeSpent : timeSpent)}
+                {formatTime(
+                  task.status === 'in-progress'
+                    ? timeSpent
+                    : task.timeSpent || 0
+                )}
               </span>
             </div>
           </div>
@@ -115,6 +130,7 @@ const TaskItem = ({ task }) => {
                 )}
               </>
             )}
+
             {user.role === 'manager' && task.status === 'pending-approval' && (
               <>
                 <button onClick={() => handleStatusChange('closed')}>
